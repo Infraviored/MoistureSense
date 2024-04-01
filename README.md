@@ -6,10 +6,16 @@ The MoistureSense Project is a highly efficient and cost-effective system design
 
 This project offers a smart solution to monitor soil moisture levels, leveraging capacitive moisture sensors and a Wemos D1 microcontroller. It is designed to operate with minimal power consumption, remaining in deep sleep mode and waking once daily to measure and report soil moisture levels. By connecting to Wi-Fi and publishing moisture levels over MQTT, it integrates smoothly into smart home systems or remote monitoring setups. This README details the hardware components, software configuration, and setup instructions for both the battery-powered and wired versions of the Moisture Sensor Project.
 
-<div style="display:flex; align-items:center; justify-content:space-between; width: 100%;">
-  <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/battery.png?raw=true" alt="Battery Edition" style="height: 400px; width: auto;">
-  <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/valve.png?raw=true" alt="Valve Edition" style="height: 400px; width: auto;">
-  <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/rear.png?raw=true" alt="Rear View" style="height: 400px; width: auto;">
+<div style="display: flex; width: 100%; align-items: center; justify-content: space-between;">
+  <div style="flex: 1;">
+    <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/battery.png?raw=true" alt="Battery Edition" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 1;">
+    <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/valve.png?raw=true" alt="Valve Edition" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 1;">
+    <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/rear.png?raw=true" alt="Rear View" style="width: 100%; height: auto;">
+  </div>
 </div>
 
 
