@@ -2,15 +2,16 @@
 
 The MoistureSense Project is a highly efficient and cost-effective system designed to monitor soil moisture levels for plants. Utilizing capacitive moisture sensors sourced from AliExpress, this project integrates with a Wemos D1 microcontroller to deliver timely and accurate soil humidity readings. It's ideal for anyone looking to maintain optimal watering schedules for their plants, ensuring they are never over or under-watered. The system can operate as a standalone battery-powered unit or be connected to a 24-volt power supply for enhanced functionality, including automatic watering through a solenoid valve.
 
-## Overview
-
-This project offers a smart solution to monitor soil moisture levels, leveraging capacitive moisture sensors and a Wemos D1 microcontroller. It is designed to operate with minimal power consumption, remaining in deep sleep mode and waking once daily to measure and report soil moisture levels. By connecting to Wi-Fi and publishing moisture levels over MQTT, it integrates smoothly into smart home systems or remote monitoring setups. This README details the hardware components, software configuration, and setup instructions for both the battery-powered and wired versions of the Moisture Sensor Project.
-
 <div style="display:flex; justify-content:space-between; align-items:center;">
   <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/battery.png?raw=true" alt="Battery Edition" width="33%"/>
   <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/valve.png?raw=true" alt="Valve Edition" width="20.5%"/>
   <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/rear.png?raw=true" alt="Rear View" width="33%"/>
 </div>
+
+## Overview
+
+This project offers a smart solution to monitor soil moisture levels, leveraging capacitive moisture sensors and a Wemos D1 microcontroller. It is designed to operate with minimal power consumption, remaining in deep sleep mode and waking once daily to measure and report soil moisture levels. By connecting to Wi-Fi and publishing moisture levels over MQTT, it integrates smoothly into smart home systems or remote monitoring setups. This README details the hardware components, software configuration, and setup instructions for both the battery-powered and wired versions of the Moisture Sensor Project.
+
 
 ## Hardware
 
