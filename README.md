@@ -8,7 +8,7 @@ This project offers a smart solution to monitor soil moisture levels, leveraging
 
 <div style="display:flex; justify-content:space-between; align-items:center;">
   <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/battery.png?raw=true" alt="Battery Edition" width="33%"/>
-  <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/valve.png?raw=true" alt="Valve Edition" width="20%"/>
+  <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/valve.png?raw=true" alt="Valve Edition" width="22%"/>
   <img src="https://github.com/Infraviored/MoistureSense/blob/main/models/renders/rear.png?raw=true" alt="Rear View" width="33%"/>
 </div>
 
