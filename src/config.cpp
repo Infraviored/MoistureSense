@@ -3,13 +3,12 @@
 
 // fundamental config
 //! IMPORTANT! RENAME!
-const char *MQTT_DEVICE_NAME = "WaterValve";
+const char *MQTT_DEVICE_NAME = "MoistureSensor1";
 
-String sCommandTopic = String(MQTT_DEVICE_NAME) + "/commands";
 String sStateTopic = String(MQTT_DEVICE_NAME) + "/state";
-const char *commandTopic = sCommandTopic.c_str();
 const char *stateTopic = sStateTopic.c_str();
 
 // other config
-const int VALVE_PIN = D2;
+const int SENSOR_VIN_PIN = D2;
+const int SENSOR_OUT_PIN = A0;
 const int LED_PIN = D1;

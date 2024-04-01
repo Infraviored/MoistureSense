@@ -1,142 +1,96 @@
 #include <Arduino.h>
-#include <Servo.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
 #include "connection.h"
 
-void handleMqttMessage(char *topic, byte *payload, unsigned int length);
-void controlValve(unsigned long duration);
-void monitorValve();
+void performSensorReading();
+int performOutlierDetectionAndAveraging(int arr[], int n);
 
-bool valveOpen = false;
-unsigned long valveOpenTimestamp = 0;
-const unsigned long MAX_VALVE_OPEN_DURATION = 300000; // 100 seconds in milliseconds
-unsigned long currentValveOpenDuration = 0;           // Stores the desired open duration for the valve
-unsigned long lastStatusTimestamp = 0;
-const unsigned long STATUS_INTERVAL = 1000; // 1 second in milliseconds
+// Time to sleep (in milliseconds)
+// Default: 1 hour
+unsigned long sleepTimeMs = 3600000;
+// Test: 10 seconds
+// unsigned long sleepTimeMs = 10000;
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("Starting up...");
+  // Only run setup code once after waking from sleep
+  Serial.begin(74880);
+  Serial.println("Waking up...");
 
-  pinMode(VALVE_PIN, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
+  // Initialize pins
   pinMode(LED_PIN, OUTPUT);
+  pinMode(SENSOR_VIN_PIN, OUTPUT);
+  pinMode(SENSOR_OUT_PIN, INPUT);
 
-  client.setServer(mqtt_server, mqtt_port);
-  client.setCallback(handleMqttMessage);
-
+  // Connect to WiFi and MQTT
   setup_wifi();
+  client.setServer(mqtt_server, mqtt_port);
   reconnect();
 
-  Serial.println("Ready to water!");
+  // Perform sensor reading and processing
+  performSensorReading();
+
+  // Go back to sleep
+  Serial.println("Going to sleep...");
+  Serial.flush();
+  ESP.deepSleep(sleepTimeMs * 1000); // deepSleep takes microseconds
 }
 
 void loop()
 {
-  if (!client.connected())
-  {
-    reconnect();
-  }
-  client.loop();
-  monitorValve();
-  delay(20);
+  // This loop will never be executed because the ESP goes to sleep in the setup() function
 }
 
-void handleMqttMessage(char *topic, byte *payload, unsigned int length)
+void performSensorReading()
 {
-  String message = "";
-  for (unsigned int i = 0; i < length; i++)
-  {
-    message += (char)payload[i];
-  }
-  String information_message = "Command \"" + message + "\" received on topic \"" + String(topic) + "\"";
-  Serial.println(information_message);
+  digitalWrite(SENSOR_VIN_PIN, HIGH); // Power the sensor
+  digitalWrite(LED_PIN, HIGH);        // Turn on the LED
+  
+  
+  const int warmupReadings = 5;
+  const int numReadings = 20;
+  int readings[numReadings]; // Array to hold raw sensor readings
 
-  if (strcmp(topic, commandTopic) == 0)
+  // Warm up the sensor
+  for (int i = 0; i < warmupReadings; i++)
   {
-    if (message == "open_valve")
-    {
-      controlValve(100000); // Open for 100 seconds
-    }
-    else if (message == "close_valve")
-    {
-      controlValve(0); // Close immediately
-    }
-    else if (message == "10s")
-    {
-      controlValve(10000); // Open for 10 seconds
-    }
-    else if (message.startsWith("openfor_"))
-    {
-      // Extract the number after "openfor"
-      int duration = message.substring(8).toInt(); // Convert the substring to an integer
-      controlValve(duration * 1000);               // Assuming the duration is in seconds, so multiply by 1000 to get milliseconds
-    }
-    else
-    {
-      Serial.println("Command unknown");
-    }
+    analogRead(SENSOR_OUT_PIN);
+    delay(100);
   }
+  digitalWrite(LED_PIN, LOW); // Turn off the LED
+
+  // Take multiple readings
+  for (int i = 0; i < numReadings; i++)
+  {
+    readings[i] = analogRead(SENSOR_OUT_PIN);
+    Serial.println(readings[i]);
+    delay(100);
+  }
+
+  // Perform outlier detection and averaging here
+  // ...
+  int processedValue = performOutlierDetectionAndAveraging(readings, numReadings);
+
+  // Publish to MQTT
+  String payload = String(processedValue);
+  client.publish(stateTopic, payload.c_str());
+
+  // Turn off sensor
+  digitalWrite(SENSOR_VIN_PIN, LOW);
 }
 
-void controlValve(unsigned long duration)
+int performOutlierDetectionAndAveraging(int arr[], int n)
 {
-  if (duration > 0)
+  // For simplicity, let's just average all values for now.
+  // You can add outlier detection logic here.
+
+  int sum = 0;
+  for (int i = 0; i < n; i++)
   {
-    if (!valveOpen) // Only open the valve if it's not already open
-    {
-      if (duration > MAX_VALVE_OPEN_DURATION)
-      {
-        duration = MAX_VALVE_OPEN_DURATION;
-      }
-
-      valveOpen = true;
-      valveOpenTimestamp = millis();
-      currentValveOpenDuration = duration;
-
-      digitalWrite(VALVE_PIN, HIGH);
-      digitalWrite(LED_BUILTIN, LOW);
-      digitalWrite(LED_PIN, HIGH);
-      client.publish(stateTopic, "valve_open");
-      Serial.println("Valve opened");
-    }
+    sum += arr[i];
   }
-  else
-  {
-    valveOpen = false;
-    digitalWrite(VALVE_PIN, LOW);
-    digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LED_PIN, LOW);
-    client.publish(stateTopic, "valve_closed");
-    Serial.println("Valve closed");
-  }
-}
 
-void monitorValve()
-{
-  if (valveOpen)
-  {
-    unsigned long elapsedTime = millis() - valveOpenTimestamp;
-
-    if (elapsedTime > currentValveOpenDuration)
-    {
-      valveOpen = false;
-      digitalWrite(VALVE_PIN, LOW);
-      digitalWrite(LED_BUILTIN, HIGH);
-      digitalWrite(LED_PIN, LOW);
-      client.publish(stateTopic, "valve_closed");
-      Serial.println("Valve closed");
-    }
-    else if (millis() - lastStatusTimestamp > STATUS_INTERVAL)
-    {
-      // Calculate remaining time and publish
-      unsigned long remainingTime = (currentValveOpenDuration - elapsedTime) / 1000; // Convert to seconds
-      String statusMessage = String(remainingTime);
-      client.publish(stateTopic, statusMessage.c_str());
-      lastStatusTimestamp = millis(); // Update the timestamp
-    }
-  }
+  return sum / n;
 }

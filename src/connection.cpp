@@ -51,9 +51,6 @@ void flashLed(int repetitions, int on_duration, int off_duration)
         flashLed(3, 300, 300); // Flash the built-in LED 3 times after connecting
 
         // Directly use the global constants
-        client.subscribe(commandTopic);
-        Serial.print("Subscribed to topic: ");
-        Serial.println(commandTopic);
         client.publish(stateTopic, "ready");
       }
       else
